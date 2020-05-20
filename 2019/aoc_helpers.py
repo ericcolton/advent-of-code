@@ -1,6 +1,8 @@
 import sys
 import os
 
+"Helper functions for Advent of Code solutions"
+
 def get_input_filepath(filepath):
     if len(sys.argv) > 1:
         return sys.argv[1]

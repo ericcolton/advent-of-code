@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
-"""Advent of Code Day 2: 1202 Program Alarm"""
+"""
+Advent of Code Day 2: 1202 Program Alarm
+
+https://adventofcode.com/2019/day/2
+"""
 
 from aoc_helpers import get_input_filepath
 
