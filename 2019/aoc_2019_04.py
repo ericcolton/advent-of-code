@@ -31,13 +31,13 @@ def follows_complex_double_rule(digits):
         prev_digit = d
     return current_sequence_length == 2
 
-def find_next_candidate(digits, index=-1):
+def increment_candidate(digits, index=-1):
     if index == -1:
         index = len(digits) - 1
     if digits[index] == 9:
         if index == 0:
             raise Exception("overflow error")
-        find_next_candidate(digits, index - 1)
+        increment_candidate(digits, index - 1)
         digits[index] = digits[index - 1]
     else:
         digits[index] += 1
@@ -47,14 +47,13 @@ def find_match_count(input_min, input_max):
     complex_match_count = 0
     digits = [int(x) for x in str(input_min)]
     while True:
-        candidate = int(''.join(str(x) for x in digits))
-        if candidate > input_max:
+        if int(''.join(str(x) for x in digits)) > input_max:
             break
         if follows_simple_double_rule(digits):
             simple_match_count += 1
         if follows_complex_double_rule(digits):
             complex_match_count += 1
-        find_next_candidate(digits)
+        increment_candidate(digits)
     return (simple_match_count, complex_match_count)
 
 def parse_input_file(input_filepath):
