@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Advent of Code 2019 Day 5: Day 5: Sunny with a Chance of Asteroids
+Advent of Code 2019 Day 5: Sunny with a Chance of Asteroids
 
 https://adventofcode.com/2019/day/5
 """
