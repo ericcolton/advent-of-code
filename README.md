@@ -1,8 +1,13 @@
 # Advent Of Code
-### [adventofcode.com](http://adventofcode.com)
 
 These are my solutions to the problems presented on [Advent of Code](http://adventofcode.com), implemented in Python 3.  I took this project on to learn Python.
 
-Eric Colton
+Me: [Eric Colton](https://www.facebook.com/ecolton)
 
-[Facebook](https://www.facebook.com/ecolton)
+
+
+Advent of Code
+
+[adventofcode.com](http://adventofcode.com)
+
+Copyright (c) Eric Wastl
