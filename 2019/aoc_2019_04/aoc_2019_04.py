@@ -6,8 +6,6 @@ Advent of Code 2019 Day 4: Secure Container
 https://adventofcode.com/2019/day/4
 """
 
-from aoc_helpers import get_input_filepath
-
 def follows_simple_double_rule(digits):
     prev_digit = 0
     for d in digits:
@@ -63,9 +61,10 @@ def parse_input_file(input_filepath):
         return (int(range_min), int(range_max))
 
 if __name__ == "__main__":
-    file_path = get_input_filepath(__file__)
-    (input_min, input_max) = parse_input_file(file_path)
-    (results_1, results_2) = find_match_count(input_min, input_max)
-    print(f"Solution to Part 1 is: {results_1}")
-    print(f"Solution to Part 2 is: {results_2}")
-
+    input_filepath = __file__.rstrip('.py') + '_input.txt'
+    (input_min, input_max) = parse_input_file(input_filepath)
+    (part_1, part_2) = find_match_count(input_min, input_max)
+    print(f"Solution to Part 1 is: {part_1}")
+    assert part_1 == 1929
+    print(f"Solution to Part 2 is: {part_2}")
+    assert part_2 == 1306
