@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Written by Eric Colton
+
+import re
 from aoc_2019_07 import find_max_output_all_perms
 
 def parse_program_str(input):
@@ -30,8 +33,6 @@ def test_example_feedback_program_5():
     assert rv == 18216
 
 if __name__ == '__main__':
-    test_example_program_1()
-    test_example_program_2()
-    test_example_program_3()
-    test_example_feedback_program_4()
-    test_example_feedback_program_5()
+    for symbol in dir():
+        if re.match('^test_', symbol):
+            globals()[symbol]()
