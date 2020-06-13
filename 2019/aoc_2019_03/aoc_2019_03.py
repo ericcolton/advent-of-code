@@ -6,11 +6,6 @@ Advent of Code Day 3: Crossed Wires
 https://adventofcode.com/2019/day/3
 """
 
-from aoc_helpers import get_input_filepath
-
-class InvalidDirectionError(Exception):
-    pass
-
 class CircuitChecker():
     
     def record_circuit(self, circuit):
@@ -44,7 +39,7 @@ class CircuitChecker():
                 elif instruction['direction'] == 'R':                    
                     current_x += 1
                 else:
-                    raise InvalidDirectionError(f"invalid direction: {instruction['direction']}")
+                    raise f"Invalid direction: {instruction['direction']}"
                 current_length += 1
                 op(current_x, current_y, current_length)
 
@@ -86,11 +81,14 @@ def parse_input_file(input_filepath):
         return (input_1, input_2)
 
 if __name__ == "__main__":
-    file_path = get_input_filepath(__file__)
-    (input_1, input_2) = parse_input_file(file_path)
+    input_filepath = __file__.rstrip('.py') + '_input.txt'
+    (input_1, input_2) = parse_input_file(input_filepath)
     cc = CircuitChecker()
     cc.record_circuit(input_1)
     cc.compare_circuit(input_2)
-    print(f"Solution to Part 1 is: {cc.best_distance_to_origin()}")
-    print(f"Solution to Part 2 is: {cc.best_wire_length()}")
-
+    part_1 = cc.best_distance_to_origin()
+    print(f"Solution to Part 1: {part_1}")
+    assert part_1 == 768
+    part_2 = cc.best_wire_length()
+    print(f"Solution to Part 2: {part_2}")
+    assert part_2 == 8684
