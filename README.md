@@ -1,5 +1,6 @@
 # AdventOfCode
 
-These are my solutions to the problems presented on Adventofcode.com.  I will be implementing the solutions in Python 3.
+These are my solutions to the problems presented on (Advent of Code)[https://adventofcode.com/], implemented in Python 3.  I took this project on to learn Python.
 
-https://adventofcode.com/
+Eric Colton
+http://ericcolton.com
