@@ -6,18 +6,9 @@ Advent of Code Day 2: 1202 Program Alarm
 https://adventofcode.com/2019/day/2
 """
 
-from aoc_helpers import get_input_filepath
-
 OP_CODE_ADD = 1
 OP_CODE_MULTIPLY = 2
 OP_CODE_END = 99
-
-class OpCodeError(Exception):
-    pass
-class UnexpectedEOFError(Exception):
-    pass
-class ExhaustedSolutionSpaceError(Exception):
-    pass
 
 class ComputerProcessor():
     def __init__(self, data):
@@ -32,7 +23,7 @@ class ComputerProcessor():
                 break
             
             if program_ptr > len(self.data) - 4:
-                raise UnexpectedEOFError()
+                raise "Unexpected EOF"
 
             (in_1, in_2, dest) = self.data[program_ptr+1:program_ptr+4]
             (data_1, data_2) = (self.data[in_1], self.data[in_2])
@@ -42,7 +33,7 @@ class ComputerProcessor():
             elif op == OP_CODE_MULTIPLY:
                 self.data[dest] = data_1 * data_2
             else:
-                raise OpCodeError(f"unknown opcode: {op}")
+                raise f"Unexpected opcode: {op}"
             
             program_ptr += 4
 
@@ -63,7 +54,7 @@ def solve_part_2(raw_input):
             processor = ComputerProcessor(data)
             if processor.run_program() == 19690720:
                 return 100 * i + j
-    raise ExhaustedSolutionSpaceError()
+    raise "Exhausted Solution Space"
     
 def parse_input_file(input_filepath):
     with open(input_filepath, 'r') as file:
@@ -71,8 +62,11 @@ def parse_input_file(input_filepath):
         return [int(i) for i in line.split(',')]
 
 if __name__ == "__main__":
-    input_data = parse_input_file(get_input_filepath(__file__))
-    rv_part_1 = solve_part_1(input_data.copy())
-    print (f"Part 1 result: {rv_part_1}")
-    rv_part_2 = solve_part_2(input_data.copy())
-    print (f"Part 2 result: {rv_part_2}")
+    input_filename = __file__.rstrip('.py') + '_input.txt'
+    input_data = parse_input_file(input_filename)
+    part_1 = solve_part_1(input_data.copy())
+    print (f"Part 1 solution: {part_1}")
+    assert part_1 == 11590668
+    part_2 = solve_part_2(input_data.copy())
+    print (f"Part 2 solution: {part_2}")
+    assert part_2 == 2254
