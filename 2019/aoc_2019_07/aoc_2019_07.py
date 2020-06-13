@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+Advent of Code 2019 Day 7: Amplification Circuit
+
+https://adventofcode.com/2019/day/7
+"""
+
 from intcode import IntcodeComputer
 
 def run_linked_computers(program, settings, logging=False):
