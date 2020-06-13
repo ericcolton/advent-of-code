@@ -7,7 +7,6 @@ https://adventofcode.com/2019/day/5
 """
 
 import re
-from aoc_helpers import get_input_filepath
 
 INSTR_ADD = 1
 INSTR_MULT = 2
@@ -95,16 +94,16 @@ def parse_input_file(input_filepath):
         return parse_input_line(file.readline().rstrip())
 
 if __name__ == "__main__":
-    file_path = get_input_filepath(__file__)
-    program = parse_input_file(file_path)
+    input_filepath = __file__.rstrip('.py') + '_input.txt'
+    program = parse_input_file(input_filepath)
     cp = ComputerProcessor(program)
     cp.input = 1
     cp.run_program()
-    solution_1 = cp.output[-1]
+    part_1 = cp.output[-1]
     cp.input = 5
     cp.run_program()
-    solution_2 = cp.output[-1]
-    print(f"Solution to Part 1 is: {solution_1}")
-    print(f"Solution to Part 2 is: {solution_2}")
-    assert solution_1 == 7566643
-    assert solution_2 == 9265694
+    part_2 = cp.output[-1]
+    print(f"Solution to Part 1 is: {part_1}")
+    assert part_1 == 7566643    
+    print(f"Solution to Part 2 is: {part_2}")
+    assert part_2 == 9265694
