@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+Advent of Code 2019 Day 6: Universal Orbit Map
+
+https://adventofcode.com/2019/day/6
+"""
+
 class Node:
 
     def __init__(self, name):
@@ -9,7 +15,7 @@ class Node:
 
     def distance_to_root(self):
         if self.__known_distance_to_root < 0:
-            self.__known_distance_to_root = self.parent.distance_to_root() + 1 if self.parent else 1
+            self.__known_distance_to_root = self.parent.distance_to_root() + 1 if self.parent else 0
         return self.__known_distance_to_root
 
     def __repr__(self):
@@ -57,49 +63,17 @@ class OrbitMap:
             self.__node_lookup[name] = node
             return node
 
-def parse_input(raw_input: str = None) -> list:
-    if raw_input:
-        input_lines = [i.rstrip() for i in raw_input.split("\n")]
-    else:
-        with open('aoc_2019_6_input.txt', 'r') as f:
-            input_lines = [l.rstrip() for l in f.readlines()]
-
-    return [i.split(')') for i in input_lines]
-
-test_data1 = """COM)B
-B)C
-C)D
-D)E
-E)F
-B)G
-G)H
-D)I
-E)J
-J)K
-K)L"""
-
-test_data2 = """COM)B
-B)C
-C)D
-D)E
-E)F
-B)G
-G)H
-D)I
-E)J
-J)K
-K)L
-K)YOU
-I)SAN"""
+def parse_input_data(data: str):
+    return [line.rstrip().split(')') for line in data.rstrip().split("\n")]
 
 if __name__ == '__main__':
-    #input = parse_input(test_data1)
-    #input = parse_input(test_data2)
-    input = parse_input()
+    input_filepath = __file__.rstrip('.py') + '_input.txt'
+    with open(input_filepath, 'r') as file:
+        input = parse_input_data(file.read())
     om = OrbitMap(input)
-    solution_1 = om.count_total_orbits()
-    print(f"Solution to part 1 is {solution_1}")
-    assert solution_1 == 317557
-    solution_2 = om.calc_distance_between('YOU', 'SAN')
-    print(f"Solution to part 2 is {solution_2}")
-    assert solution_2 == 481
+    part_1 = om.count_total_orbits()
+    print(f"Part 1 solution is {part_1}")
+    assert part_1 == 315757
+    part_2 = om.calc_distance_between('YOU', 'SAN')
+    print(f"Part 2 solution is {part_2}")
+    assert part_2 == 481
