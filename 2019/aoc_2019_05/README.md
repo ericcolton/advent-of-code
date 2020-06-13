@@ -74,10 +74,9 @@ Here are some jump tests that take an input, then output 0 if the input was zero
 * 3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9 (using position mode)
 * 3,3,1105,-1,9,1101,0,0,12,4,12,99,1 (using immediate mode)
 Here's a larger example:
-
-* 3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
-* 1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
-* 999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+```
+3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+```
 The above example program uses an input instruction to ask for a single number. The program will then output 999 if the input value is below 8, output 1000 if the input value is equal to 8, or output 1001 if the input value is greater than 8.
 
 This time, when the TEST diagnostic program runs its input instruction to get the ID of the system to test, provide it 5, the ID for the ship's thermal radiator controller. This diagnostic test suite only outputs one number, the diagnostic code.
