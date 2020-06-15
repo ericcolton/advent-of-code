@@ -50,6 +50,7 @@ Then, the full image can be found by determining the top visible pixel in each p
 * The top-right pixel is white because the top layer is 2 (transparent), but the second layer is 1.
 * The bottom-left pixel is white because the top two layers are 2, but the third layer is 1.
 * The bottom-right pixel is black because the only visible pixel in that position is 0 (from layer 4).
+
 So, the final image looks like this:
 ```
 01
