@@ -68,7 +68,7 @@ class IntcodeComputer:
 
         # Handle length=1 instructions
         if op == INSTR_END:
-            self.log_instr(1)
+            self.log_instr(1, "HALT")
             self.halted = True
             return
 
@@ -163,7 +163,7 @@ class IntcodeComputer:
         # INSTR_END is the only two-digit op-code
         if op_code == INSTR_END:
             return 1, 1, 1, INSTR_END
-        match = re.search(r'(\d)(\d)(\d)\d(\d)', str(op_code).zfill(5))
+        match = re.search(r'^(\d)(\d)(\d)\d(\d)$', str(op_code).zfill(5))
         if not match:
             raise Exception("Illegal instruction: '{op_code}'")
         rv = (LocationMode(int(match.group(3))), LocationMode(int(match.group(2))), LocationMode(int(match.group(1))), int(match.group(4)))
