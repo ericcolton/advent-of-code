@@ -19,3 +19,10 @@ if __name__ == '__main__':
     ic.run_program()
     part_1 = ic.output.pop(0)
     print(f"Solution to part 1 is: {part_1}")
+    assert part_1 == 2682107844
+
+    ic = IntcodeComputer(input, [2], logging=False)
+    ic.run_program()
+    part_2 = ic.output.pop(0)
+    print(f"Solution to part 2 is: {part_2}")
+    assert part_2 == 34738
