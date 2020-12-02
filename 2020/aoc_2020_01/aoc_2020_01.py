@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
-# https://adventofcode.com/2020/day/1
+"""
+Advent of Code 2020 Day 1: Report Repair
+
+https://adventofcode.com/2020/day/1
+
+Solution by Eric Colton
+"""
 
 # Returns list containing n entries that sum to desired total, otherwise None if none available
 def find_n_entries_with_total(entries: list, n: int, target_total: int, _index: int = 0):
