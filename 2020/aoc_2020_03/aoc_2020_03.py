@@ -23,10 +23,7 @@ def trees_encountered(data: list, trajectory: tuple):
     return tree_count
 
 def parse_input_file(file):
-    data = []
-    for line in file:
-        data.append([c == '#' for c in line.rstrip()])
-    return data
+    return [[c == '#' for c in line.rstrip()] for line in file]
 
 if __name__ == '__main__':
     input_filename = __file__.rstrip('.py') + "_input.txt"
