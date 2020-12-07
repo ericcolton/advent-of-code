@@ -48,8 +48,6 @@ def build_container_lookup(data: list):
         if contents_record.name not in lookup:
             lookup[contents_record.name] = set()
         for edge in contents_record.contents:
-            if edge.name not in lookup:
-                lookup[edge.name] = set()
             lookup[contents_record.name].add(edge)
     return lookup
 
