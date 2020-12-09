@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+Advent of Code 2020 Day 8: Handheld Halting
+
+https://adventofcode.com/2020/day/8
+
+Solution by Eric Colton
+"""
+
 import re
 from collections import namedtuple
 

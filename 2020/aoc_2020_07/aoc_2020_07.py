@@ -3,7 +3,7 @@
 """
 Advent of Code 2020 Day 7: Handy Haversacks
 
-https://adventofcode.com/2020/day/6
+https://adventofcode.com/2020/day/7
 
 Solution by Eric Colton
 """
