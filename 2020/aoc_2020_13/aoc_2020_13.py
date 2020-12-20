@@ -11,44 +11,20 @@ Solution by Eric Colton
 import re
 from collections import namedtuple
 from collections.abc import Iterable
+from math import gcd
 
-BusEntry = namedtuple('BusEntry', ['id','prefix_gap'])
+BusEntry = namedtuple('BusEntry', ['id','offset'])
 
-def _bus_times_are_sequential(buses: list, target: int, index: int):
+def lcm(num1: int, num2: int):
+    return num1 * num2 // gcd(num1, num2)
+
+def find_first_sequential_schedule_start_time(buses: list, target: int = 0, index: int = 0, search_cadence: int = 1):
     if index == len(buses):
-        return True
+        return target
     bus = buses[index]
-    adjusted_target = target + bus.prefix_gap
-    if adjusted_target % bus.id == 0:
-        return _bus_times_are_sequential(buses, adjusted_target + 1, index + 1)
-    return False
-
-def find_sequential_schedule_start_time(buses: list, base_target: int = 0, index: int = 0):
-    if index == len(buses):
-        return base_target
-    elif index == 0:
-        return find_sequential_schedule_start_time(buses, buses[0], 1)
-    bus = buses[index]
-    target = base_target
-    while True:
-        if (target + bus.prefix_gap + 1) % bus.id == 0:
-            return find_sequential_schedule_start_time(buses, target, index + 1)
-        target += base_target
-
-# def _bus_times_are_sequential(buses: list, target: int, index: int):
-#     if index == len(buses):
-#         return True
-#     bus = buses[index]
-#     adjusted_target = target + bus.prefix_gap
-#     if adjusted_target % bus.id == 0:
-#         return _bus_times_are_sequential(buses, adjusted_target + 1, index + 1)
-#     return False
-
-# def find_sequential_schedule_start_time(buses: list):
-#     target = 0
-#     while not _bus_times_are_sequential(buses, target + 1, 1):
-#         target += buses[0].id
-#     return target
+    while (target + bus.offset) % bus.id != 0:
+        target += search_cadence
+    return find_first_sequential_schedule_start_time(buses, target, index + 1, lcm(search_cadence, bus.id))
 
 def find_earliest_bus(timestamp: int, buses: list):
     if len(buses) == 0:
@@ -63,13 +39,9 @@ def find_earliest_bus(timestamp: int, buses: list):
 def parse_bus_schedule(line: str):
     schedule = re.findall(r'(\w+),?', line)
     buses = []
-    gap = 0
-    for entry in schedule:
-        if entry == 'x':
-            gap += 1
-        else:
-            buses.append(BusEntry(int(entry), gap))
-            gap = 0
+    for offset, entry in enumerate(schedule):
+        if entry != 'x':
+            buses.append(BusEntry(int(entry), offset))
     return buses
 
 def parse_input_data(file: Iterable):
@@ -93,7 +65,6 @@ if __name__ == '__main__':
     assert part_1 == 2165
     print("Solution to Part 1 is {}".format(part_1))
 
-    part_2 = find_sequential_schedule_start_time(buses)
+    part_2 = find_first_sequential_schedule_start_time(buses)
+    assert part_2 == 534035653563227
     print("Solution to Part 2 is {}".format(part_2))
-
-
