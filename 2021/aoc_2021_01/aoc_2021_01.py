@@ -46,5 +46,5 @@ if __name__ == '__main__':
         print(f"The solution to Part 1 is {part_1}")
 
         part_2 = count_increasing_depths_3_window(data)
-        #assert part_2 == 1557
+        assert part_2 == 1608
         print(f"The solution to Part 1 is {part_2}")
