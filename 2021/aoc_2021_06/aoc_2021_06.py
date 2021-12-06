@@ -8,8 +8,7 @@ https://adventofcode.com/2021/day/6
 Solution by Eric Colton
 """
 
-import re
-from typing import List, Dict, Set, Tuple
+from typing import List, Dict
 from collections import namedtuple, defaultdict
 
 Point = namedtuple('Point', ['x', 'y'])
