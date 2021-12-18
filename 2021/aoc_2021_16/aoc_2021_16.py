@@ -89,12 +89,12 @@ class OperatorPacket(Packet):
         self.subpackets = []
         subpackets_length_type = stream.read_bit()        
         if subpackets_length_type:
-            # length specified
+            # count specified
             subpackets_count = Packet.bin_to_dec(stream.read(11))
             for _ in range(subpackets_count):
                 self.subpackets.append(PacketFactory.build(stream))
         else:
-            # count specified
+            # length specified
             subpackets_length = Packet.bin_to_dec(stream.read(15))
             start_data_length = stream.length()
             while stream.length() > start_data_length - subpackets_length:
