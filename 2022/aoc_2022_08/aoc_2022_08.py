@@ -11,57 +11,20 @@ Solution by Eric Colton
 import re
 from typing import List
 
-class Dir:
-    def __init__(self, parent, name):
-        self.parent = parent
-        self.contents = {}
-        self.name = name
+def parse_input_data(raw_lines: List[str]) -> List[List[str]]:
+    return [line.rstrip() for line in raw_lines]
 
-    def add(self, name, item):
-        self.contents[name] = item
+def find_visible(data: List[str]) -> List[List[bool]]:
+    len_row = len(data[0])
+    visible = [[False] * len_row for _ in range(len(data))]
+    for y in range(len(data)):
+        water_mark = 0
+        for x in range(len_row):
+            
 
-class File:
-    def __init__(self, name, size):
-        self.name = name
-        self.size = size
 
-def parse_input_data(raw_lines: List[str]) -> Dir:
-    return [c for c in line.rstrip() for line in raw_lines]
 
-def find_dir_sizes(node: object) -> Tuple[int, List[int]]:
-    if isinstance(node, File):
-        return (node.size, [])
-    elif isinstance(node, Dir):
-        cum_size, sub_dirs = 0, []
-        for c in node.contents.values():
-            size, dir_list = find_dir_sizes(c)
-            cum_size += size
-            sub_dirs.extend(dir_list)
-        sub_dirs.append(cum_size)
-        return (cum_size, sub_dirs)
-    else:
-        raise Exception(f"unexpected content node: {node}")
-
-def find_sum_small_dir_sizes(sizes: List[int]) -> int:
-    return sum(filter(lambda x: x <= 100000, sizes))
-
-def find_best_deletion_candidate_size(total_size: int, sizes: List[int]) -> int:
-    target = total_size - 40000000
-    if target < 0:
-        return 0
-    sizes = sorted(sizes)
-    left, right = 0, len(sizes) - 1
-    best = 0
-    while left <= right:
-        mid = left + (right - left) // 2
-        if sizes[mid] == target:
-            best = sizes[mid]
-        if sizes[mid] < target:
-            left = mid + 1
-        elif sizes[mid] > target:
-            right = mid - 1
-            best = sizes[mid]
-    return best
+    return visible
 
 if __name__ == '__main__':
     input_filename = __file__.rstrip('.py') + '_input.txt'
