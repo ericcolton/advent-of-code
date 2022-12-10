@@ -12,43 +12,51 @@ import re
 from typing import List, Tuple
 
 class KnotMap:
-    def __init__(self):
-        self.head = (0, 0)
-        self.tail = (0, 0)
+    def __init__(self, length):
+        self.roap = [(0, 0)] * length
         self.tail_visited = set([(0, 0)])
-    
+
     def exec_instrs(self, instrs: List[Tuple[str, int]]):
         for i in instrs:
             dir, count = i
             for _ in range(count):
-                self.move(dir)
-    
-    def move(self, dir: str):
-        y, x = self.head
+                self.move_head(dir)
+
+    def recursive_move(self, node: int):
+        py, px = self.roap[node - 1]
+        ny, nx = self.roap[node]
+        node_moved = True
+        if py - ny == 2:
+            self.roap[node] = ny + 1, px
+        elif py - ny == -2:
+            self.roap[node] = ny - 1, px
+        elif px - nx == 2:
+            self.roap[node] = py, nx + 1
+        elif px - nx == -2:
+            self.roap[node] = py, nx - 1
+        else:
+            return
+
+        if node == len(self.roap) - 1:
+            self.tail_visited.add(self.roap[node])
+        else:
+            self.recursive_move(node + 1)
+
+    def move_head(self, dir: str):
+        y, x = self.roap[0]
         if dir == 'U':
-            self.head = y + 1, x
+            self.roap[0] = y + 1, x
         elif dir == 'D':
-            self.head = y - 1, x
+            self.roap[0] = y - 1, x
         elif dir == 'R':
-            self.head = y, x + 1
+            self.roap[0] = y, x + 1
         elif dir == 'L':
-            self.head = y, x - 1
+            self.roap[0] = y, x - 1
         else:
             raise Exception("Unexpected direction")
-        
-        hy, hx = self.head
-        ty, tx = self.tail
-        
-        if hy - ty == 2:
-            self.tail = ty + 1, hx
-        elif hy - ty == -2:
-            self.tail = ty - 1, hx
-        elif hx - tx == 2:
-            self.tail = hy, tx + 1
-        elif hx - tx == -2:
-            self.tail = hy, tx - 1
-        
-        self.tail_visited.add(self.tail)
+        self.recursive_move(1)
+
+
 
 def parse_input_data(raw_lines: List[str]) -> List[Tuple[str, int]]:
     data = []
@@ -68,9 +76,14 @@ if __name__ == '__main__':
     with open(input_filename, 'r') as file:
         raw_input = file.readlines()
         instrs = parse_input_data(raw_input)
-        knot_map = KnotMap()
-        knot_map.exec_instrs(instrs)
-        part_1 = find_tail_visited_count(knot_map)
+        knot_map_2 = KnotMap(2)
+        knot_map_2.exec_instrs(instrs)
+        part_1 = find_tail_visited_count(knot_map_2)
         assert part_1 == 6090
         print(f"The solution to Part 1 is {part_1}")
 
+        knot_map_10 = KnotMap(10)
+        knot_map_10.exec_instrs(instrs)
+        part_2 = find_tail_visited_count(knot_map_10)
+        print(f"The solution to Part 2 is {part_2}")
+        assert part_2 == 2320
