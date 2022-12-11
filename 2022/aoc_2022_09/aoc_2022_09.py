@@ -25,7 +25,6 @@ class KnotMap:
     def recursive_move(self, node: int):
         py, px = self.roap[node - 1]
         ny, nx = self.roap[node]
-        node_moved = True
         if py - ny == 2:
             self.roap[node] = ny + 1, px
         elif py - ny == -2:
@@ -56,8 +55,6 @@ class KnotMap:
             raise Exception("Unexpected direction")
         self.recursive_move(1)
 
-
-
 def parse_input_data(raw_lines: List[str]) -> List[Tuple[str, int]]:
     data = []
     for line in raw_lines:
@@ -82,7 +79,7 @@ if __name__ == '__main__':
         assert part_1 == 6090
         print(f"The solution to Part 1 is {part_1}")
 
-        knot_map_10 = KnotMap(10)
+        knot_map_10 = KnotMap(9)
         knot_map_10.exec_instrs(instrs)
         part_2 = find_tail_visited_count(knot_map_10)
         print(f"The solution to Part 2 is {part_2}")
