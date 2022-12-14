@@ -9,70 +9,70 @@ Solution by Eric Colton
 """
 
 import re
-from typing import List, Dict, Tuple, Set
-from collections import deque
+from typing import List, Tuple
+from functools import cmp_to_key
 
-class Node:
-    def __init__(self, y: int, x: int, char: str):
-        self.y = y
-        self.x = x
-        self.is_start = False
-        self.is_dest = False
-        if char == 'S':
-            self.height = 0
-            self.is_start = True
-        elif char == 'E':
-            self.height = 25
-            self.is_dest = True
+DIVIDER_1 = [[2]]
+DIVIDER_2 = [[6]]
+
+def comparator(a: object, b: object) -> int:
+    a_list, b_list = isinstance(a, list), isinstance(b, list)
+    if a_list and b_list:
+        for i in range(min(len(a), len(b))):
+            result = comparator(a[i], b[i])
+            if result != 0:
+                return result
+        if len(a) < len(b):
+            return -1
+        elif len(a) == len(b):
+            return 0
         else:
-            self.height = ord(char) - ord('a')
+            return 1
+    elif a_list and not b_list:
+        return comparator(a, [b])
+    elif not a_list and b_list:
+        return comparator([a], b)
+    else:
+        if a < b:
+            return -1
+        elif a == b:
+            return 0
+        else:
+            return 1
 
-def get_neighbors(node: Node, data: Dict[Tuple, Dict], seen: Set[Node], going_down: bool) -> List[Node]:
-    neighbors = []
-    for neighbor_loc in [(node.y + 1, node.x), (node.y - 1, node.x), (node.y, node.x + 1), (node.y, node.x - 1)]:
-        if neighbor_loc in data and neighbor_loc not in seen:
-            neighbor = data[neighbor_loc]
-            if ((going_down and neighbor.height >= node.height - 1)
-                or (not going_down and neighbor.height <= node.height + 1)):
-                seen.add(neighbor_loc)
-                neighbors.append(neighbor)
-    return neighbors
+def find_sum_ordered_indicies(data: List[Tuple[List, List]]) -> int:
+    total = 0
+    for i, pair in enumerate(data):
+        if comparator(pair[0], pair[1]) == -1:
+            total += i + 1
+    return total
 
-def find_efficient_path_from_start(data: List[List[int]], start_node: Node) -> int:
-    count = 0
-    seen = set([start_node])
-    queue = deque([None, start_node])    
-    while len(queue) > 1:
-        current = queue.pop()
-        if current == None:
-            count += 1
-            queue.appendleft(None)
-            continue
-        if current.is_dest:
-            return count
-        queue.extendleft(get_neighbors(current, data, seen, False))
-    return -1
+def flatten_pairs(data: List[Tuple]) -> List:
+    output = []
+    for pair in data:
+        output.append(pair[0])
+        output.append(pair[1])
+    return output
 
-def find_efficient_path_from_any_a(data: List[List[int]], start_node: Node) -> int:
-    count = 0
-    seen = set([start_node])
-    queue = deque([None, start_node])    
-    while len(queue) > 1:
-        current = queue.pop()
-        if current == None:
-            count += 1
-            queue.appendleft(None)
-            continue
-        if current.height == 0:
-            return count
-        queue.extendleft(get_neighbors(current, data, seen, True))
-    return -1
+def append_dividers(data: List) -> List:
+    new_data = data[:]
+    new_data.append(DIVIDER_1)
+    new_data.append(DIVIDER_2)
+    return new_data
 
-class Item:
-    def __init__(self, content):
-        self.content = content
-
-def parse_list(line: str, index: int) -> Item:
+def sort_packets_and_multiply_divider_placements(data: List):
+    sorted_data = sorted(data, key=cmp_to_key(comparator))
+    place_1, place_2 = None, None
+    for i, packet in enumerate(sorted_data):
+        if packet == DIVIDER_1:
+            place_1 = i + 1
+        elif packet == DIVIDER_2:
+            place_2 = i + 1
+        if place_1 != None and place_2 != None:
+            return place_1 * place_2
+    raise Exception("Cannot find dividers")
+    
+def parse_list(line: str, index: int) -> object:
     assert line[index] == '['
     content = []
     i = index + 1
@@ -90,10 +90,9 @@ def parse_list(line: str, index: int) -> Item:
             content.append(int(match.group(1)))
             continue
         raise Exception("Parse error")
+    return content, i + 1
 
-    return Item(content), i + 1
-
-def parse_input_data(raw_lines: List[str]) -> List[List[int]]:
+def parse_input_data(raw_lines: List[str]) -> List[Tuple[List, List]]:
     i = 0
     data = []
     while i < len(raw_lines):
@@ -106,12 +105,12 @@ if __name__ == '__main__':
     with open(input_filename, 'r') as file:
         raw_input = file.readlines()
         data = parse_input_data(raw_input)
-        print(data)
-        # part_1 = find_efficient_path_from_start(data, start_node)
-        # assert part_1 == 481
-        # print(f"The solution to Part 1 is {part_1}")
+        part_1 = find_sum_ordered_indicies(data)
+        assert part_1 == 5366
+        print(f"The solution to Part 1 is {part_1}")
 
-        # part_2 = find_efficient_path_from_any_a(data, dest_node)
-        # assert part_2 == 480
-        # print(f"The solution to Part 2 is {part_2}")
-
+        flat_list = flatten_pairs(data)
+        flat_list = append_dividers(flat_list)
+        part_2 = sort_packets_and_multiply_divider_placements(flat_list)
+        assert part_2 == 23391
+        print(f"The solution to Part 2 is {part_2}")
