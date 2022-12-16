@@ -29,14 +29,6 @@ def test_find_tuning_frequency():
         tuning_freq = find_tuning_frequency(data, 20)
         assert tuning_freq == 56000011
 
-# def test_fill_sand_until_full():
-#     data = parse_input_data(TEST_INPUT)
-#     r = Reservoir()
-#     draw_rock_lines(r, data)
-#     r.max_y += 1
-#     count = add_sand_until_full(r)
-#     assert count == 93
-
 if __name__ == '__main__':
     for symbol in dir():
         if re.match('^test_', symbol):

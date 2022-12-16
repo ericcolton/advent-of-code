@@ -42,16 +42,14 @@ def intersections_on_y(data: List[Tuple[Point, Point]], y_intersect: int) -> Lis
 def find_flattened_ranges(ranges: List[DimRange]) -> List[DimRange]:
     ranges = sorted(ranges, key=lambda i: i[0])
     output = []
-    start = ranges[0].start
     heap = [ranges[0].end]
-    for ri in range(1, len(ranges)):
-        r = ranges[ri]
+    start = ranges[0].start
+    for r in ranges[1:]:
         while len(heap) > 0 and heap[0] < r.start:
             end = heapq.heappop(heap)
             if len(heap) == 0:
                 output.append(DimRange(start, end))
                 start = r.start
-                break
         heapq.heappush(heap, r.end)
     while len(heap) > 1:
         heapq.heappop(heap)
@@ -83,7 +81,7 @@ def find_tuning_frequency(data: List[Tuple[Point, Point]], max_dim: int) -> int:
         if len(constricted_ranges) == 1:
             if constricted_ranges[0].start == 1:
                 return tuning_freq(0, y)
-            elif constricted_ranges[0].start == max_dim:
+            elif constricted_ranges[0].end == max_dim - 1:
                 return tuning_freq(max_dim, y)
         elif len(constricted_ranges) == 2:
             x = constricted_ranges[0].end + 1
