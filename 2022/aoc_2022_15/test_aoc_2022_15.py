@@ -25,9 +25,9 @@ def test_find_unavailable_y_spaces():
     assert summ == 26
 
 def test_find_tuning_frequency():
-        data = parse_input_data(TEST_INPUT)
-        tuning_freq = find_tuning_frequency(data, 20)
-        assert tuning_freq == 56000011
+    data = parse_input_data(TEST_INPUT)
+    tuning_freq = find_tuning_frequency(data, 20)
+    assert tuning_freq == 56000011
 
 if __name__ == '__main__':
     for symbol in dir():
