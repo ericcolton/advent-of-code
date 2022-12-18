@@ -10,6 +10,7 @@ Solution by Eric Colton
 
 import re
 import heapq
+import time
 from typing import List, Dict, Tuple
 from collections import namedtuple
 
@@ -46,7 +47,9 @@ def find_max_pressure(node_lookup, name, moves, turned_on, dp):
         dp[key] = best
     return dp[key]
 
-def find_max_pressure_with_elephant(node_lookup, me, elephant, turn, moves, turned_on, me_seen, elephant_seen, dp):
+def find_max_pressure_with_elephant(node_lookup, me, elephant, turn, moves, turned_on, me_seen, elephant_seen, elephant_avoid, begin, dp):
+    if begin == -1:
+        begin = time.time()
     if moves == 0:
         return 0
     key = me, elephant, turn, turned_on, moves
@@ -54,29 +57,36 @@ def find_max_pressure_with_elephant(node_lookup, me, elephant, turn, moves, turn
         best = 0        
         if turn == 0:
             node = node_lookup[me]
+            elephant_avoid = set()
             for edge in node.edges:
                 if edge not in me_seen:
-                    me_seen.add(me)
-                    best = max(best, find_max_pressure_with_elephant(node_lookup, edge, elephant, 1, moves, turned_on, me_seen, elephant_seen, dp))
-                    me_seen.remove(me)
+                    me_seen.add(edge)
+                    if me == elephant:
+                        elephant_avoid.add(edge)
+                    best = max(best, find_max_pressure_with_elephant(node_lookup, edge, elephant, 1, moves, turned_on, me_seen, elephant_seen, elephant_avoid, begin, dp))
+                    me_seen.remove(edge)
             if node.rate > 0 and me not in turned_on:
                 new_on = set(turned_on)
                 new_on.add(me)
                 new_on = frozenset(new_on)
-                best = max(best, ((moves - 1) * node.rate) + find_max_pressure_with_elephant(node_lookup, me, elephant, 1, moves, new_on, set(), elephant_seen, dp))
+                best = max(best, ((moves - 1) * node.rate) + find_max_pressure_with_elephant(node_lookup, me, elephant, 1, moves, new_on, set(), elephant_seen, set(), begin, dp))
         else:
             node = node_lookup[elephant]
             for edge in node.edges:
                 if edge not in elephant_seen:
-                    elephant_seen.add(elephant)
-                    best = max(best, find_max_pressure_with_elephant(node_lookup, me, edge, 0, moves - 1, turned_on, me_seen, elephant_seen, dp))
-                    elephant_seen.remove(elephant)
+                    if elephant not in elephant_avoid:
+                        elephant_seen.add(edge)
+                        best = max(best, find_max_pressure_with_elephant(node_lookup, me, edge, 0, moves - 1, turned_on, me_seen, elephant_seen, set(), begin, dp))
+                        elephant_seen.remove(edge)
             if node.rate > 0 and elephant not in turned_on:
                 new_on =  set(turned_on)
                 new_on.add(elephant)
                 new_on = frozenset(new_on)
-                best = max(best, ((moves - 1) * node.rate) + find_max_pressure_with_elephant(node_lookup, me, elephant, 0, moves - 1, new_on, me_seen, set(), dp))
+                best = max(best, ((moves - 1) * node.rate) + find_max_pressure_with_elephant(node_lookup, me, elephant, 0, moves - 1, new_on, me_seen, set(), set(), begin, dp))
         dp[key] = best
+        len_dp_keys = len(dp.keys())
+        if len_dp_keys % 1000000 == 0:
+            print(f"dp keys = {len_dp_keys} [{time.time() - begin}]")
     return dp[key]
 
 
@@ -89,8 +99,11 @@ if __name__ == '__main__':
         assert part_1 == 2124
         print(f"The solution to Part 1 is {part_1}")
 
-        part_2 = find_max_pressure_with_elephant(node_lookup, 'AA', 'AA', 0, 26, frozenset(), set(), set(), {})
-        print(f"The solution to Part 2 is {part_2}")
+        #part_2 = find_max_pressure_with_elephant(node_lookup, 'AA', 'AA', 0, 26, frozenset(), set(), set(), {})
+        begin_time = time.time()
+        part_2 = find_max_pressure_with_elephant(node_lookup, 'AA', 'AA', 0, 26, frozenset(), set('AA'), set('AA'), set(), -1, {})
+        elapsed = time.time() - begin_time
+        print(f"The solution to Part 2 is {part_2} ({elapsed})")
         assert part_1 == 2124
 
 
