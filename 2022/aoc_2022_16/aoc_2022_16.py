@@ -24,93 +24,123 @@ def parse_line(id: int, line: str) -> Tuple[str, Node]:
     return Node(id, match.group(1), int(match.group(2)), edges)
 
 def parse_input_data(raw_lines: List[str]) -> List[Dict[str, Node]]:
-    name_lookup, id_lookup = {}, {}
+    nodes = []
     id = 0
     for line in raw_lines:
-        node = parse_line(id, line.rstrip())
-        name_lookup[node.name] = node
-        id_lookup[id] = node        
+        nodes.append(parse_line(id, line.rstrip()))
         id += 1
-    return name_lookup, id_lookup
+    return nodes
 
-def find_max_pressure(node_lookup, name, moves, turned_on, dp):
-    if moves == 0:
-        return 0
-    key = name, moves, turned_on
-    if key not in dp:
-        node = node_lookup[name]
-        best = 0
-        for edge in node.edges:
-            best = max(best, find_max_pressure(node_lookup, edge, moves - 1, turned_on, dp))
-        if node.rate > 0 and name not in turned_on:
-            new_on =  set(turned_on)
-            new_on.add(name)
-            new_on = frozenset(new_on)
-            best = max(best, ((moves - 1) * node.rate) + find_max_pressure(node_lookup, name, moves -1, new_on, dp))
-        dp[key] = best
-    return dp[key]
+class ValveSystem:
 
-class WithElephant:
-    def __init__(self, name_lookup, id_lookup):
+    def __init__(self, nodes: List[Node], verbose: bool = False):
+        name_lookup, id_lookup, id_bitmap = {}, {}, {}
+        bit = 0
+        for node in nodes:
+            name_lookup[node.name] = node
+            id_lookup[node.id] = node
+            if node.rate > 0:
+                id_bitmap[node.id] = 0x1 << bit
+                bit += 1
         self.name_lookup = name_lookup
         self.id_lookup = id_lookup
-        id_bitmap = {}
-        i = 0
-        for node in self.name_lookup.values():
-            if node.rate > 0:
-                id_bitmap[node.id] = 0x1 << i
-                i += 1
         self.id_bitmap = id_bitmap
-        self.dp = {}
-        self.begin = time.time()
+        self.begin = 0
+        self.verbose = verbose
 
-    def find_max_pressure_with_elephant(self, me, elephant, turn, moves, turned_on):
+    def time_elapsed(self) -> int:
+        return int(time.time() - self.begin)
+
+    # top down dynamic programming model
+    # (break down recursely and memoize intermediate states)
+    def find_max_pressure_top_down(self, moves: int) -> int:
+        self.dp = {}
+        self.begin = time.time()        
+        return self._top_down(self.name_lookup['AA'].id, 0, moves)
+
+    def _top_down(self, me: int, state: int, moves: int) -> int:
         if moves == 0:
             return 0
-        key = me << 28 | elephant << 22 | turn << 21 | moves << 16 | turned_on << 0
-        #key = me, elephant, turn, moves, turned_on
+        key = me, state, moves
         if key not in self.dp:
-            best = 0        
-            if turn == 0:
-                node = self.id_lookup[me]
-                for edge in node.edges:
-                    best = max(best, self.find_max_pressure_with_elephant(self.name_lookup[edge].id, elephant, 1, moves, turned_on))
-                if node.rate > 0 and not self.id_bitmap[me] & turned_on:
-                    new_on = turned_on | self.id_bitmap[me]
-                    best = max(best, ((moves - 1) * node.rate) + self.find_max_pressure_with_elephant(me, elephant, 1, moves, new_on))
-            else:
-                node = self.id_lookup[elephant]
-                for edge in node.edges:
-                    best = max(best, self.find_max_pressure_with_elephant(me, self.name_lookup[edge].id, 0, moves - 1, turned_on))
-                if node.rate > 0 and not self.id_bitmap[elephant] & turned_on:
-                    new_on = turned_on | self.id_bitmap[elephant]
-                    best = max(best, ((moves - 1) * node.rate) + self.find_max_pressure_with_elephant(me, elephant, 0, moves - 1, new_on))
+            node = self.id_lookup[me]
+            best = 0
+            for edge in node.edges:
+                edge_id = self.name_lookup[edge].id
+                best = max(best, self._top_down(edge_id, state, moves - 1))
+            if me in self.id_bitmap:
+                bit = self.id_bitmap[me]
+                if not state & bit:
+                    best = max(best, ((moves - 1) * node.rate) + self._top_down(me, state | bit, moves - 1))
             self.dp[key] = best
-            len_dp_keys = len(self.dp.keys())
-            if len_dp_keys % 1_000_000 == 0:
-                print(f"dp keys = {len_dp_keys // 1_000_000} [{time.time() - self.begin}]")
         return self.dp[key]
 
+    # bottom up dynamic programming model
+    # (more memory efficient because we can only need keep the last move's state)
+    def find_max_pressure_with_elephant_bottoms_up(self, moves: int) -> int:
+        node_count = len(self.id_lookup.keys())
+        bitmap_count = len(self.id_bitmap.keys())
+        self.begin = time.time()
+
+        if self.verbose:
+            print(f"Memory analysis:")
+            print(f"me_locations= {node_count} elephant_locations= {node_count} value_states= 2 ^ {bitmap_count} turns= 2 moves= {moves} ...")
+            total_mem = node_count ** 2 * 2 ** bitmap_count * 2
+            print(f"Total memory required = {total_mem:,} integers")
+            print(f"Total states = {total_mem * moves:,}")
+            
+            print("Init memory...", end="")
+        dp = [[[[0] * node_count for _ in range(node_count)] for _ in range(2 ** bitmap_count)] for _ in range(2)]
+
+        if self.verbose:
+            print(f"done. [{self.time_elapsed()} seconds]")
+
+        for m in range(1, moves + 1):
+            for turn in [1, 0]:
+                for state in range(2 ** bitmap_count):
+                    for elephant in range(node_count):
+                        for me in range(node_count):
+                            best = 0
+                            if turn == 0:  # me moves
+                                node = self.id_lookup[me]
+                                if me in self.id_bitmap:
+                                    bit = self.id_bitmap[me]
+                                    if not state & bit:
+                                        best = max(best, ((m - 1) * node.rate) + dp[1][state | bit][elephant][me])
+                                for edge in node.edges:
+                                    edge_id = self.name_lookup[edge].id
+                                    best = max(best, dp[1][state][elephant][edge_id])
+                            else:  # elephant moves
+                                node = self.id_lookup[elephant]
+                                if elephant in self.id_bitmap:
+                                    bit = self.id_bitmap[elephant]
+                                    if not state & bit:
+                                        best = max(best, ((m - 1) * node.rate) + dp[0][state | bit][elephant][me])
+                                for edge in node.edges:
+                                    edge_id = self.name_lookup[edge].id
+                                    best = max(best, dp[0][state][edge_id][me])
+                            dp[turn][state][elephant][me] = best
+
+            if self.verbose:
+                elapsed = time.time() - self.begin
+                print(f"move completed: {m} [{self.time_elapsed()} seconds]")
+
+        start = self.name_lookup['AA'].id
+        return dp[0][0][start][start]
 
 if __name__ == '__main__':
     input_filename = __file__.rstrip('.py') + '_input.txt'
     with open(input_filename, 'r') as file:
         raw_input = file.readlines()
-        name_lookup, id_lookup = parse_input_data(raw_input)
-        # part_1 = find_max_pressure(node_lookup, 'AA', 30, frozenset(), {})
-        # assert part_1 == 2124
-        # print(f"The solution to Part 1 is {part_1}")
-
-        #part_2 = find_max_pressure_with_elephant(node_lookup, 'AA', 'AA', 0, 26, frozenset(), set(), set(), {})
-        begin_time = time.time()
-        game = WithElephant(name_lookup, id_lookup)
-        part_2 = game.find_max_pressure_with_elephant(name_lookup['AA'].id, name_lookup['AA'].id, 0, 26, 0)
-        elapsed = time.time() - begin_time
-        print(f"The solution to Part 2 is {part_2} ({elapsed})")
+        nodes = parse_input_data(raw_input)
+        valve_system = ValveSystem(nodes, True)
+        part_1 = valve_system.find_max_pressure_top_down(30)
         assert part_1 == 2124
+        print(f"The solution to Part 1 is {part_1}")
+        print(f"Elapsed: {valve_system.time_elapsed()} seconds")
+        print("\n")
 
-
-
-        # part_2 = find_tuning_frequency(data, 4000000)
-        # assert part_2 == 13213086906101
-        #
+        part_2 = valve_system.find_max_pressure_with_elephant_bottoms_up(26)
+        assert part_2 == 2775
+        print(f"The solution to Part 2 is {part_2}")
+        print(f"Elapsed: {valve_system.time_elapsed()} seconds")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import re
-from aoc_2022_16 import parse_input_data, find_max_pressure, WithElephant
+from aoc_2022_16 import parse_input_data, ValveSystem
 
 TEST_INPUT = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
 Valve BB has flow rate=13; tunnels lead to valves CC, AA
@@ -15,14 +15,15 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II""".split("\n")
 
 def test_max_pressure():
-    node_lookup, _ = parse_input_data(TEST_INPUT)
-    max_pressure = find_max_pressure(node_lookup, 'AA', 30, frozenset(), {})
+    nodes = parse_input_data(TEST_INPUT)
+    valve_system = ValveSystem(nodes)
+    max_pressure = valve_system.find_max_pressure_top_down(30)
     assert max_pressure == 1651
 
 def test_max_pressure_with_elephant():
-    name_lookup, id_lookup = parse_input_data(TEST_INPUT)
-    with_elephant = WithElephant(name_lookup, id_lookup)
-    max_pressure = with_elephant.find_max_pressure_with_elephant(name_lookup['AA'].id, name_lookup['AA'].id, 0, 26, 0)
+    nodes = parse_input_data(TEST_INPUT)
+    valve_system = ValveSystem(nodes)
+    max_pressure = valve_system.find_max_pressure_with_elephant_bottoms_up(26)
     assert max_pressure == 1707
 
 if __name__ == '__main__':
