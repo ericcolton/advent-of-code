@@ -3,7 +3,7 @@
 """
 Advent of Code 2023 Day 1: Trebuchet?!
 
-https://adventofcode.com/2022/day/1
+https://adventofcode.com/2023/day/1
 
 Solution by Eric Colton
 """
