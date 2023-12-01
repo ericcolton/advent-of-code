@@ -10,28 +10,32 @@ Solution by Eric Colton
 
 from typing import List
 
-def build_trie() -> dict:
-    valid_strs = {"1": 1,
-                  "2": 2,
-                  "3": 3,
-                  "4": 4,
-                  "5": 5,
-                  "6": 6,
-                  "7": 7,
-                  "8": 8,
-                  "9": 9,
-                  "one": 1,
-                  "two": 2,
-                  "three": 3,
-                  "four": 4,
-                  "five": 5,
-                  "six": 6,
-                  "seven": 7,
-                  "eight" : 8,
-                  "nine": 9,
-                 }
+def build_trie(inc_words: bool) -> dict:
+    lookup = {"1": 1,
+              "2": 2,
+              "3": 3,
+              "4": 4,
+              "5": 5,
+              "6": 6,
+              "7": 7,
+              "8": 8,
+              "9": 9,
+             }
+
+    if inc_words:
+        words = {"one": 1,
+                 "two": 2,
+                 "three": 3,
+                 "four": 4,
+                 "five": 5,
+                 "six": 6,
+                 "seven": 7,
+                 "eight" : 8,
+                 "nine": 9,
+                }
+        lookup.update(words)
     trie = {}
-    for (key, val) in valid_strs.items():
+    for (key, val) in lookup.items():
         node = trie
         for c in key:
             if c not in node:
@@ -40,14 +44,8 @@ def build_trie() -> dict:
         node["_"] = val
     return trie
 
-def simple_digits(line: str) -> List[int]:
-    return list
-
 def parse_input_data(raw_lines: str) -> List[str]:
     return list(map(lambda l: l.rstrip(), raw_lines))
-
-def simple_digits(line: str):
-    return list(map(int, filter(lambda x: x.isdigit(), line)))
 
 def digits_inc_words(line: str, trie: dict) -> List[int]:
     digits = []
@@ -59,26 +57,18 @@ def digits_inc_words(line: str, trie: dict) -> List[int]:
             node = node[line[j]]
             if "_" in node:
                 digits.append(node["_"])
-                i = max(j, i + 1)
                 break
             j += 1
-        else:
-            i += 1
+        i += 1
     return digits
 
 def find_num_for_line(line: str, trie: dict) -> int:
-    if trie is not None:
-        digits = digits_inc_words(line, trie)
-    else:
-        digits = simple_digits(line)
+    digits = digits_inc_words(line, trie)
     rv = int(f"{str(digits[0])}{str(digits[-1])}")
     return rv
 
-def find_sum_all_lines(lines: List[str], use_words: bool) -> int:
-    if use_words:
-        return sum(map(lambda x: find_num_for_line(x, build_trie()), lines))
-    else:
-        return sum(map(lambda x: find_num_for_line(x, None), lines))
+def find_sum_all_lines(lines: List[str], inc_words: bool) -> int:
+    return sum(map(lambda x: find_num_for_line(x, build_trie(inc_words)), lines))
 
 if __name__ == '__main__':
     input_filename = __file__.strip('.py') + '_input.txt'
