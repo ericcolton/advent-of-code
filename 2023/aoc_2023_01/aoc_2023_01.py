@@ -55,10 +55,9 @@ def digits_inc_words(line: str, trie: dict) -> List[int]:
         j = i
         while j < len(line) and line[j] in node:
             node = node[line[j]]
-            if "_" in node:
-                digits.append(node["_"])
-                break
             j += 1
+        if "_" in node:
+            digits.append(node["_"])
         i += 1
     return digits
 
