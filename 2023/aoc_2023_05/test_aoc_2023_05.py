@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import re
-from aoc_2023_05 import parse_input_data
+from aoc_2023_05 import parse_input_data, find_lowest_location, find_lowest_location_with_ranges
 
 TEST_INPUT = """seeds: 79 14 55 13
 
@@ -37,15 +37,15 @@ humidity-to-location map:
 60 56 37
 56 93 4""".split("\n")
 
-def test_count_sum_adjacent_parts():
+def test_find_lowest_location():
     data = parse_input_data(TEST_INPUT)
-    part_1 = count_sum_adjacent_parts(data)
-    assert(part_1 == 4361)
+    part_1 = find_lowest_location(data)
+    assert(part_1 == 35)
 
-def test_count_sum_gear_ratios():
+def test_find_lowest_location_with_ranges():
     data = parse_input_data(TEST_INPUT)
-    part_2 = count_sum_gear_ratios(data)
-    assert(part_2 == 467835)
+    part_2 = find_lowest_location_with_ranges(data)
+    assert(part_2 == 46)
 
 if __name__ == '__main__':
     for symbol in dir():
