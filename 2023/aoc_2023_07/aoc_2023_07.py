@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 """
- Advent of Code 2023 Day 6: Wait For It
+Advent of Code 2023 Day 7: Camel Cards
 
-https://adventofcode.com/2023/day/6
+https://adventofcode.com/2023/day/7
 
 Solution by Eric Colton
 """

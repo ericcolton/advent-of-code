@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-from functools import cmp_to_key
-from collections import Counter
 from aoc_2023_07 import parse_input_data, find_sum_of_winnings
 
 TEST_INPUT = """32T3K 765
