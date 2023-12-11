@@ -9,6 +9,7 @@ Solution by Eric Colton
 """
 
 import re
+import math
 from typing import Dict
 
 def count_simple_steps(data: tuple[str, Dict[str, tuple[str, str]]]) -> int:
@@ -21,11 +22,40 @@ def count_simple_steps(data: tuple[str, Dict[str, tuple[str, str]]]) -> int:
         count += 1
     return count
 
-def reached_end_state(nodes):
-    for n in nodes:
-        if n[2] != 'Z':
-            return False
-    return True
+def count_simultaneous_steps_HACK(data: tuple[str, Dict[str, tuple[str, str]]]) -> int:
+    instrs, lookup = data
+    count = 0
+    nodes = []
+    for key in lookup.keys():
+        if key[2] == 'A':
+            nodes.append(key)
+    memo = set()
+    empty = False
+    ends = []
+    while not empty:
+        empty = True
+        for n in range(len(nodes)):
+            node = nodes[n]
+            if node == None:
+                continue
+            empty = False
+            i = count % len(instrs)
+            key = n, node, i
+            if node[2] == 'Z':
+                print(f"{n} {node} ({i}) found at {count}")        
+            if key not in memo:
+                dir = 0 if instrs[i] == 'L' else 1
+                node = lookup[node][dir]
+                nodes[n] = node
+                memo.add(key)
+            else:
+                print(f"*** {n} exit {node} ({i}) found at {count}")
+                ends.append(count)
+                nodes[n] = None
+        count += 1
+    print(ends)
+    print(math.lcm(*ends))
+    return count
 
 def count_simultaneous_steps(data: tuple[str, Dict[str, tuple[str, str]]]) -> int:
     instrs, lookup = data
@@ -61,6 +91,6 @@ if __name__ == '__main__':
         assert part_1 == 16579
         print(f"The solution to Part 1 is {part_1}")
 
-        part_2 = count_simultaneous_steps(data)
+        part_2 = count_simultaneous_steps_HACK(data)
         #assert part_2 == 16579
         print(f"The solution to Part 2 is {part_2}")
